@@ -36,26 +36,37 @@ DB_PATH = "users.db"
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher()
 
-
-service = Service(EDGE_DRIVER_PATH)
-options = Options()
-options.add_argument("--disable-gpu")
-options.add_argument("--no-sandbox")
-# Вместо закомментированной строки:
-#options.add_argument("--headless")  # Активировать headless-режим
-options.add_argument("--disable-dev-shm-usage")  # Важно для серверов с ограниченной памятью
-options.add_argument("--remote-debugging-port=9222")  # Для отладки при необходимости
-# options.add_argument("--headless")  # Оставляем браузер видимым для отладки
-options.add_argument("--disable-blink-features=AutomationControlled")
-options.add_experimental_option("excludeSwitches", ["enable-automation"])
-options.add_experimental_option("useAutomationExtension", False)
-
 import tempfile
-profile_dir = tempfile.mkdtemp(prefix="edge_profile_")
-options.add_argument(f"--user-data-dir={profile_dir}")
+import shutil
+import atexit
 
-driver = webdriver.Edge(service=service, options=options)
+def create_edge_driver():
+    service = Service(EDGE_DRIVER_PATH, log_path="msedgedriver.log")
+    options = Options()
+    options.add_argument("--disable-gpu")
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("--remote-debugging-port=9222")
+    options.add_argument("--disable-blink-features=AutomationControlled")
+    options.add_experimental_option("excludeSwitches", ["enable-automation"])
+    options.add_experimental_option("useAutomationExtension", False)
+    options.add_argument("--headless=new")  # Можно убрать если нужен GUI
+
+    # Уникальный временный профиль
+    profile_dir = tempfile.mkdtemp(prefix="edge_profile_")
+    options.add_argument(f"--user-data-dir={profile_dir}")
+
+    # Гарантированно удаляем профиль после завершения
+    def cleanup():
+        shutil.rmtree(profile_dir, ignore_errors=True)
+    atexit.register(cleanup)
+
+    driver = webdriver.Edge(service=service, options=options)
+    return driver
+
+driver = create_edge_driver()
 wait = WebDriverWait(driver, 30)
+
 
 def google_login(email, password):
     driver.get("https://accounts.google.com/signin")
