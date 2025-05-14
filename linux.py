@@ -15,7 +15,6 @@ from bs4 import BeautifulSoup
 import aiosqlite
 from datetime import datetime, timedelta, timezone
 import time
-from pyvirtualdisplay import Display
 
 import logging
 
@@ -28,8 +27,6 @@ logging.basicConfig(
     ]
 )
 
-display = Display(visible=0, size=(1920, 1080))
-display.start()
 
 API_TOKEN = '7518633518:AAGPpzuNc-zfTJORqU0HtysJtT2maMvZ6ww'
 CHAI_URL = 'https://web.chai-research.com/chat/_bot_84f03ba4-5c22-432c-953b-bb2d9ea5e87b_jeujvN95MYfkLAND1KvUkgooqJr1_1746539448341'
@@ -430,4 +427,3 @@ if __name__ == '__main__':
     chai_login_via_google()
     asyncio.run(main())
 
-display.stop()
