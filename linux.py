@@ -17,6 +17,17 @@ from datetime import datetime, timedelta, timezone
 import time
 from pyvirtualdisplay import Display
 
+import logging
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    handlers=[
+        logging.FileHandler("bot.log"),
+        logging.StreamHandler()
+    ]
+)
+
 display = Display(visible=0, size=(1920, 1080))
 display.start()
 
@@ -242,12 +253,14 @@ def get_or_create_tab(user_id, chat_url):
                 driver.get(chat_url)
             return
         except Exception:
-            pass
+            del user_tabs[user_id]  # Удаляем нерабочие хэндлы
+
     driver.execute_script("window.open('about:blank');")
     new_tab = driver.window_handles[-1]
     driver.switch_to.window(new_tab)
     driver.get(chat_url)
     user_tabs[user_id] = new_tab
+
 
 
 
@@ -359,7 +372,7 @@ async def cleanup_task():
                     del user_tabs[user_id]
                 await delete_user_chat(user_id)
                 print(f"Закрыт чат пользователя {user_id} из-за неактивности.")
-        await asyncio.sleep(2000)  # Проверять каждые 10 минут
+        await asyncio.sleep(800)  # Проверять каждые 10 минут
 
 
 
@@ -368,12 +381,12 @@ async def log_message(user_id: int, character: str):
     async with aiosqlite.connect(DB_PATH) as db:
         await db.execute(
             "INSERT INTO messages (user_id, character, timestamp) VALUES (?, ?, ?)",
-            (user_id, character, datetime.now().isoformat())
+            (user_id, character, datetime.now(timezone.utc).isoformat())
         )
         await db.commit()
 
 async def messages_today(user_id: int):
-    today = datetime.now().date().isoformat()
+    today = datetime.now(timezone.utc).date().isoformat()
     async with aiosqlite.connect(DB_PATH) as db:
         async with db.execute(
             "SELECT COUNT(*) FROM messages WHERE user_id=? AND date(timestamp)=?",
@@ -388,7 +401,7 @@ async def can_send_message(user_id: int):
             "SELECT subscription, until FROM users WHERE user_id=?", (user_id,)
         ) as cursor:
             row = await cursor.fetchone()
-    if row and row[0] == "Active" and row[1] and datetime.fromisoformat(row[1]) > datetime.now().isoformat():
+    if row and row[0] == "Active" and row[1] and datetime.fromisoformat(row[1]) > datetime.now(timezone.utc).isoformat():
         return True, None  # Безлимит
     count = await messages_today(user_id)
     return count < 60, 60 - count
@@ -400,7 +413,7 @@ async def can_send_message(user_id: int):
             "SELECT subscription, until FROM users WHERE user_id=?", (user_id,)
         ) as cursor:
             row = await cursor.fetchone()
-    if row and row[0] == "Active" and row[1] and datetime.fromisoformat(row[1]) > datetime.now().isoformat():
+    if row and row[0] == "Active" and row[1] and datetime.fromisoformat(row[1]) > datetime.now(timezone.utc).isoformat():
         return True, None  # Безлимит
     count = await messages_today(user_id)
     return count < 60, 60 - count
