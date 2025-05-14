@@ -49,6 +49,11 @@ options.add_argument("--remote-debugging-port=9222")  # Для отладки п
 options.add_argument("--disable-blink-features=AutomationControlled")
 options.add_experimental_option("excludeSwitches", ["enable-automation"])
 options.add_experimental_option("useAutomationExtension", False)
+
+import tempfile
+profile_dir = tempfile.mkdtemp(prefix="edge_profile_")
+options.add_argument(f"--user-data-dir={profile_dir}")
+
 driver = webdriver.Edge(service=service, options=options)
 wait = WebDriverWait(driver, 30)
 
@@ -403,17 +408,6 @@ async def can_send_message(user_id: int):
     count = await messages_today(user_id)
     return count < 60, 60 - count
 
-
-async def can_send_message(user_id: int):
-    async with aiosqlite.connect(DB_PATH) as db:
-        async with db.execute(
-            "SELECT subscription, until FROM users WHERE user_id=?", (user_id,)
-        ) as cursor:
-            row = await cursor.fetchone()
-    if row and row[0] == "Active" and row[1] and datetime.fromisoformat(row[1]) > datetime.now(timezone.utc).isoformat():
-        return True, None  # Безлимит
-    count = await messages_today(user_id)
-    return count < 60, 60 - count
 
 async def main():
     await init_db()
