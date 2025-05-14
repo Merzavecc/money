@@ -45,7 +45,7 @@ options = Options()
 options.add_argument("--disable-gpu")
 options.add_argument("--no-sandbox")
 # Вместо закомментированной строки:
-options.add_argument("--headless")  # Активировать headless-режим
+#options.add_argument("--headless")  # Активировать headless-режим
 options.add_argument("--disable-dev-shm-usage")  # Важно для серверов с ограниченной памятью
 options.add_argument("--remote-debugging-port=9222")  # Для отладки при необходимости
 # options.add_argument("--headless")  # Оставляем браузер видимым для отладки
