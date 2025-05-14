@@ -3,7 +3,7 @@ from selenium.webdriver.edge.service import Service
 from selenium.webdriver.edge.options import Options
 
 # Путь к msedgedriver (скачай с https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/)
-EDGE_DRIVER_PATH = '/path/to/msedgedriver'  # замените на свой путь
+EDGE_DRIVER_PATH = '/root/money/msedgedriver'  # замените на свой путь
 
 
 def open_edge():
