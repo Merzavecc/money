@@ -15,7 +15,10 @@ from bs4 import BeautifulSoup
 import aiosqlite
 from datetime import datetime, timedelta, timezone
 import time
-import tempfile
+from pyvirtualdisplay import Display
+
+display = Display(visible=0, size=(1920, 1080))
+display.start()
 
 API_TOKEN = '7518633518:AAGPpzuNc-zfTJORqU0HtysJtT2maMvZ6ww'
 CHAI_URL = 'https://web.chai-research.com/chat/_bot_84f03ba4-5c22-432c-953b-bb2d9ea5e87b_jeujvN95MYfkLAND1KvUkgooqJr1_1746539448341'
@@ -28,10 +31,12 @@ dp = Dispatcher()
 
 service = Service(EDGE_DRIVER_PATH)
 options = Options()
-profile_dir = tempfile.mkdtemp(prefix="edge_profile_")
-options.add_argument(f"--user-data-dir={profile_dir}")
 options.add_argument("--disable-gpu")
 options.add_argument("--no-sandbox")
+# Вместо закомментированной строки:
+options.add_argument("--headless")  # Активировать headless-режим
+options.add_argument("--disable-dev-shm-usage")  # Важно для серверов с ограниченной памятью
+options.add_argument("--remote-debugging-port=9222")  # Для отладки при необходимости
 # options.add_argument("--headless")  # Оставляем браузер видимым для отладки
 options.add_argument("--disable-blink-features=AutomationControlled")
 options.add_experimental_option("excludeSwitches", ["enable-automation"])
@@ -411,3 +416,5 @@ if __name__ == '__main__':
     google_login("tgmoney109@gmail.com", "Ker010203")
     chai_login_via_google()
     asyncio.run(main())
+
+display.stop()
