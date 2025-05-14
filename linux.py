@@ -15,6 +15,7 @@ from bs4 import BeautifulSoup
 import aiosqlite
 from datetime import datetime, timedelta, timezone
 import time
+import tempfile
 
 API_TOKEN = '7518633518:AAGPpzuNc-zfTJORqU0HtysJtT2maMvZ6ww'
 CHAI_URL = 'https://web.chai-research.com/chat/_bot_84f03ba4-5c22-432c-953b-bb2d9ea5e87b_jeujvN95MYfkLAND1KvUkgooqJr1_1746539448341'
@@ -27,6 +28,8 @@ dp = Dispatcher()
 
 service = Service(EDGE_DRIVER_PATH)
 options = Options()
+profile_dir = tempfile.mkdtemp(prefix="edge_profile_")
+options.add_argument(f"--user-data-dir={profile_dir}")
 options.add_argument("--disable-gpu")
 options.add_argument("--no-sandbox")
 # options.add_argument("--headless")  # Оставляем браузер видимым для отладки
