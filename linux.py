@@ -18,7 +18,7 @@ import time
 
 API_TOKEN = '7518633518:AAGPpzuNc-zfTJORqU0HtysJtT2maMvZ6ww'
 CHAI_URL = 'https://web.chai-research.com/chat/_bot_84f03ba4-5c22-432c-953b-bb2d9ea5e87b_jeujvN95MYfkLAND1KvUkgooqJr1_1746539448341'
-EDGE_DRIVER_PATH = "/root/money/msedgedriver.exe"
+EDGE_DRIVER_PATH = "/root/money/msedgedriver"
 DB_PATH = "users.db"
 
 bot = Bot(token=API_TOKEN)
